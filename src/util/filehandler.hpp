@@ -1,5 +1,5 @@
-#ifndef RO_FILEREADER_HPP
-#define RO_FILEREADER_HPP
+#ifndef RO_FILEHANDLER_HPP
+#define RO_FILEHANDLER_HPP
 
 #include <cstdint>
 #include <exception>
@@ -35,6 +35,19 @@ Buffer readFile(const char* filename)
     return Buffer(buf, size);
 }
 
+void writeFile(const char* filename, const Buffer& buf)
+{
+    if (!buf.size())
+        return;
+
+    std::ofstream ofs(filename, std::ofstream::binary);
+
+    if (!ofs)
+        throw FileNotOpen(filename);
+
+    ofs.write(reinterpret_cast<const char*>(buf.data()), buf.size());
+}
+
 static_assert(sizeof(char) == sizeof(uint8_t), "Error: char size is not 1 byte");
 
-#endif // RO_FILEREADER_HPP
+#endif // RO_FILEHANDLER_HPP

@@ -2,10 +2,10 @@
 #include <memory>
 #include <vector>
 #include <glad/glad.h>
-#include "filereader.hpp"
-#include "Spr.hpp"
-#include "Texture.hpp"
-#include "window/Window.hpp"
+#include "../resource/Spr.hpp"
+#include "../util/filehandler.hpp"
+#include "../util/Texture.hpp"
+#include "../window/Window.hpp"
 
 using namespace std;
 
@@ -25,15 +25,15 @@ private:
 
 void SprWindow::setup()
 {
-    for (const Spr::PaletteImage& img : spr_.paletteImages())
+    for (const Spr::PaletteImage& img : spr_.palette_images)
     {
-        if (const Pal* pal = spr_.pal())
+        if (spr_.pal)
         {
             vector<uint8_t> pixels;
 
             for (uint8_t index : img.indices)
             {
-                const Color& color = pal->at(index);
+                const Color& color = spr_.pal->colors[index];
 
                 pixels.push_back(color.r);
                 pixels.push_back(color.g);
@@ -62,7 +62,7 @@ void SprWindow::paint()
 
     for (int i = 0; i < textures_.size(); i++)
     {
-        const Spr::PaletteImage& img = spr_.paletteImages().at(i);
+        const Spr::PaletteImage& img = spr_.palette_images[i];
         const float w = img.width;
         const float h = img.height;
         

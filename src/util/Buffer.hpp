@@ -16,6 +16,9 @@ public:
     // Pointer to the data.
     uint8_t* data() noexcept { return data_.get(); }
 
+    // Const pointer to the data.
+    const uint8_t* data() const noexcept { return data_.get(); }
+
     // Size of the buffer.
     size_t size() const noexcept { return size_; }
 
@@ -30,7 +33,7 @@ public:
     void read(void* dest, size_t n)
     {
         checkRange(n);
-        std::memcpy(dest, data_.get(), n);
+        std::memcpy(dest, &data_[read_pos_], n);
         read_pos_ += n;
     }
 

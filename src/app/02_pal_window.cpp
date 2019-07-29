@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 #include <glad/glad.h>
-#include "filereader.hpp"
-#include "Pal.hpp"
-#include "window/Window.hpp"
+#include "../resource/Pal.hpp"
+#include "../util/filehandler.hpp"
+#include "../window/Window.hpp"
 
 using namespace std;
 
@@ -32,7 +32,7 @@ void PalWindow::paint()
     {
         for (int j = 0; j < 16; j++)
         {
-            const Color& c = pal_[i*j];
+            const Color& c = pal_.colors[i*j];
 
             glPushMatrix();
             glTranslatef(i * rect_width, j * rect_height, 0.0);

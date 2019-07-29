@@ -1,6 +1,6 @@
 #include <iostream>
-#include "filereader.hpp"
-#include "Pal.hpp"
+#include "../resource/Pal.hpp"
+#include "../util/filehandler.hpp"
 
 using namespace std;
 
@@ -14,11 +14,11 @@ int main(int argc, const char* argv[])
     try {
         Pal pal(readFile(argv[1]));
         
-        cout << "Pal file " << argv[1] << " loaded:" << endl;
-        cout << "  colors:" << endl;
+        cout << "Pal file '" << argv[1] << "' loaded:" << endl;
+        cout << "  colors: " << pal.colors.size() << endl;
         
-        for (auto& color : pal.colors())
-            cout << "   - rgb(" << color.r << ',' << color.g << ',' << color.b << ')' << endl;
+        for (const Color& color : pal.colors)
+            cout << "   - " << color << endl;
     }
     catch (const exception& e) {
         cout << "Exception: " << e.what() << endl;
