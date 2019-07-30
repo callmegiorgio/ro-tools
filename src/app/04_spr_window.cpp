@@ -1,10 +1,9 @@
 #include <iostream>
-#include <memory>
 #include <vector>
 #include <glad/glad.h>
-#include "../resource/Spr.hpp"
+#include "../format/Spr.hpp"
+#include "../gl/Texture.hpp"
 #include "../util/filehandler.hpp"
-#include "../util/Texture.hpp"
 #include "../window/Window.hpp"
 
 using namespace std;
@@ -17,10 +16,10 @@ public:
     void setup();
 
 private:
-    void paint() override;
+    void draw() override;
 
     Spr spr_;
-    vector<unique_ptr<Texture>> textures_;
+    vector<Texture> textures_;
 };
 
 void SprWindow::setup()
@@ -29,19 +28,20 @@ void SprWindow::setup()
     {
         if (spr_.pal)
         {
-            vector<uint8_t> pixels;
+            vector<uint8_t> pixels(img.indices.size() * 4);
 
-            for (uint8_t index : img.indices)
+            for (int i = 0; i < img.indices.size(); i++)
             {
+                uint8_t index = img.indices[i];
                 const Color& color = spr_.pal->colors[index];
 
-                pixels.push_back(color.r);
-                pixels.push_back(color.g);
-                pixels.push_back(color.b);
-                pixels.push_back(color.a);
+                pixels[i*4 + 0] = color.r;
+                pixels[i*4 + 1] = color.g;
+                pixels[i*4 + 2] = color.b;
+                pixels[i*4 + 3] = color.a;
             }
 
-            textures_.emplace_back(make_unique<Texture>(img.width, img.height, 4, pixels.data()));
+            textures_.emplace_back(Texture(img.width, img.height, Texture::Rgba, pixels.data()));
         }
     }
 
@@ -49,7 +49,7 @@ void SprWindow::setup()
     glEnable(GL_TEXTURE_2D);
 }
 
-void SprWindow::paint()
+void SprWindow::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -66,7 +66,7 @@ void SprWindow::paint()
         const float w = img.width;
         const float h = img.height;
         
-        textures_[i]->bind();
+        textures_[i].bind();
 
         glPushMatrix();
         glTranslatef(x, y, 0.0);

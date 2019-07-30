@@ -27,6 +27,7 @@ struct Act {
         int attribute;
     };
 
+    /// A frame is a mix of images, anchors, and a sound.
     struct Frame {
         int sound_index = -1;
         std::vector<Image> images;
@@ -40,7 +41,7 @@ struct Act {
     };
 
     struct Sound {
-        std::array<char, 40> filepath;
+        std::array<char, 40> filename; // C-string filename in relative sound path
     };
 
     /**

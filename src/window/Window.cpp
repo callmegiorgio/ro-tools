@@ -182,11 +182,19 @@ void Window::loop()
 	if (!impl_->window)
 		return;
 
+	last_time_ = glfwGetTime();
+
 	while (!glfwWindowShouldClose(impl_->window))
 	{
-		paint();
+		double current_time = glfwGetTime();		
+		
+		update(current_time - last_time_);
+		draw();
+		
 		glfwSwapBuffers(impl_->window);
 		glfwPollEvents();
+
+		last_time_ = current_time;
 	}
 
 	onClose();

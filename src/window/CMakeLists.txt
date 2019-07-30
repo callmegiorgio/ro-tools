@@ -1,8 +1,17 @@
-message(STATUS "Creating target window")
-file(GLOB WINDOW_HEADERS *.hpp)
-file(GLOB WINDOW_SOURCES *.cpp)
-set(SOURCE_FILES ${WINDOW_HEADERS} ${WINDOW_SOURCES} "glad.c")
+message(STATUS "Creating target rowindow")
 
-add_library(window STATIC ${SOURCE_FILES})
+set(SOURCE_FILES
+    "glad.c"
+    "Key.hpp"
+    "KeyEvent.hpp"
+    "ModifierKeys.hpp"
+    "MouseButton.hpp"
+    "MouseButtonEvent.hpp"
+    "MouseMotionEvent.hpp"
+    "MouseWheelEvent.hpp"
+    "Window.cpp"
+    "Window.hpp")
 
-message(STATUS "Creating target window - done")
+add_library(rowindow STATIC ${SOURCE_FILES})
+
+message(STATUS "Creating target rowindow - done")

@@ -118,8 +118,8 @@ try {
         // Read sound paths
         for (Sound& sound : sounds)
         {
-            buf.read(sound.filepath.data(), sound.filepath.size());
-            sound.filepath[39] = '\0';
+            buf.read(sound.filename.data(), sound.filename.size());
+            sound.filename[39] = '\0';
         }
     }
 

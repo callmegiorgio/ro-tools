@@ -1,7 +1,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include "../resource/Act.hpp"
+#include "../format/Act.hpp"
 #include "../util/filehandler.hpp"
 
 using namespace std;
@@ -98,7 +98,7 @@ int main(int argc, const char* argv[])
 
         if (verbosity >= 1) {
             for (const Act::Sound& sound : act.sounds)
-                cout << "    " << sound.filepath.data() << endl;
+                cout << "    " << sound.filename.data() << endl;
         }
     }
     catch (const exception& e) {

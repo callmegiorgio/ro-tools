@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <glad/glad.h>
-#include "../resource/Pal.hpp"
+#include "../format/Pal.hpp"
 #include "../util/filehandler.hpp"
 #include "../window/Window.hpp"
 
@@ -12,12 +12,12 @@ public:
     explicit PalWindow(Pal pal) : pal_{ std::move(pal) } {}
 
 private:
-    void paint() override;
+    void draw() override;
 
     Pal pal_;
 };
 
-void PalWindow::paint()
+void PalWindow::draw()
 {
     const int rect_width = width() / 16;
     const int rect_height = height() / 16;

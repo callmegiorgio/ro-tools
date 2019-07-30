@@ -20,7 +20,7 @@ public:
 	void move(int x, int y);
 	void resize(int width, int height);
     void close();
-	void loop(/*double interval = 16.6666*/);
+	void loop();
 
 	int x() const { return mouse_x_; }
 	int y() const { return mouse_y_; }
@@ -28,7 +28,8 @@ public:
     int height() const { return height_; }
 
 protected:
-	virtual void paint() {}
+	virtual void update(double dt) {}
+	virtual void draw() {}
 	virtual void onClose() {}
 	virtual void onMove(int x, int y) {}
 	virtual void onResize(int width, int height) {}
@@ -48,6 +49,7 @@ private:
 	int mouse_y_;
 	int width_;
 	int height_;
+	double last_time_;
 };
 
 #endif // RO_WINDOW_WINDOW_HPP

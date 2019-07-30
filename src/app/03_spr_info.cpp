@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../resource/Spr.hpp"
+#include "../format/Spr.hpp"
 #include "../util/filehandler.hpp"
 
 using namespace std;
@@ -27,7 +27,12 @@ int main(int argc, const char* argv[])
         for (const Spr::RgbaImage& img : spr.rgba_images)
             cout << "    - " << img.width << 'x' << img.height << " pixels" << endl;
 
-        cout << "  has palette? " << std::boolalpha << (spr.pal != nullptr) << endl;
+        cout << "  palette colors: " << (spr.pal ? spr.pal->colors.size() : 0) << endl;
+
+        if (spr.pal) {
+            for (const Color& color : spr.pal->colors)
+                cout << "   - " << color << endl;
+        }
     }
     catch (const exception& e) {
         cout << "Exception: " << e.what() << endl;

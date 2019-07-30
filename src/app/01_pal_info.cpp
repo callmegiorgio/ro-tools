@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../resource/Pal.hpp"
+#include "../format/Pal.hpp"
 #include "../util/filehandler.hpp"
 
 using namespace std;
