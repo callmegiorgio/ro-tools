@@ -1,6 +1,7 @@
 #include <array>
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include <glad/glad.h>
 #include "../format/Act.hpp"
 #include "../format/Spr.hpp"
@@ -35,11 +36,10 @@ static const char* resizeFilterName(Texture::ResizeFilter filter)
     return "";
 }
 
-class BodyHeadViewer : public Window {
+class MultiActViewer : public Window {
 public:
-    explicit BodyHeadViewer(Sprite body_sprite, Sprite head_sprite)
-        : body_sprite_{ std::move(body_sprite) }
-        , head_sprite_{ std::move(head_sprite) } {}
+    explicit MultiActViewer(vector<Sprite> sprites)
+        : sprites_{ std::move(sprites) } {}
 
     void setup();
 
@@ -53,31 +53,29 @@ private:
         cout << "scale: " << scale_per_ << '%' << endl;
     }
     
-    void update(double dt) override
-    {
-        if (animating_) {
-            body_sprite_.update(dt);
-            head_sprite_.update(dt);
-        }
-    }
-
+    void update(double dt) override;
     void draw() override;
     void drawCoordinateAxes();
     void drawSprites();
 
-    Sprite body_sprite_, head_sprite_;
+    // Sprites in their anchor dependency order i.e. sprites_[0] has no dependency
+    vector<Sprite> sprites_;
+
     int center_x_, center_y_;
     int scale_per_ = 100;
     bool animating_ = false;
     int min_filter_idx_ = 0;
 };
 
-void BodyHeadViewer::setup()
+void MultiActViewer::setup()
 {
-    if (!body_sprite_.load() || !head_sprite_.load()) {
-        cout << "Could not load sprite objects" << endl;
-        Window::close();
-        return;
+    for (auto& sprite : sprites_)
+    {
+        if (!sprite.load()) {
+            cout << "Could not load sprite" << endl;
+            Window::close();
+            return;
+        }
     }
 
     center_x_ = width() / 2;
@@ -92,7 +90,7 @@ void BodyHeadViewer::setup()
     showCommands();
 }
 
-void BodyHeadViewer::showCommands()
+void MultiActViewer::showCommands()
 {
     cout << "Escape   exit" << endl;
     cout << "Space    toggle animation on/off" << endl;
@@ -104,7 +102,7 @@ void BodyHeadViewer::showCommands()
     cout << "N        change sprite minifying filter" << endl;
 }
 
-void BodyHeadViewer::onKeyEvent(KeyEvent evt)
+void MultiActViewer::onKeyEvent(KeyEvent evt)
 {
     if (evt.action() != KeyEvent::Pressed)
         return;
@@ -123,34 +121,32 @@ void BodyHeadViewer::onKeyEvent(KeyEvent evt)
             break;
 
         case Key::Left:
-            body_sprite_.recedeFrame();
-            head_sprite_.recedeFrame();
+            for (auto& sprite : sprites_) sprite.recedeFrame();
             changed_animation = true;
             break;
 
         case Key::Right:
-            body_sprite_.advanceFrame();
-            head_sprite_.advanceFrame();
+            for (auto& sprite : sprites_) sprite.advanceFrame();
             changed_animation = true;
             break;
 
         case Key::Up:
-            body_sprite_.advanceAnimation();
-            head_sprite_.advanceAnimation();
+            for (auto& sprite : sprites_) sprite.advanceAnimation();
             changed_animation = true;
             break;
 
         case Key::Down:
-            body_sprite_.recedeAnimation();
-            head_sprite_.recedeAnimation();
+            for (auto& sprite : sprites_) sprite.recedeAnimation();
             changed_animation = true;
             break;
 
         case Key::M:
         {
-            Texture::ResizeFilter mag_filter = body_sprite_.magFilter() == Texture::Linear ? Texture::Nearest : Texture::Linear;
-            body_sprite_.setMagFilter(mag_filter);
-            head_sprite_.setMagFilter(mag_filter);
+            Texture::ResizeFilter mag_filter = sprites_[0].magFilter() == Texture::Linear ? Texture::Nearest : Texture::Linear;
+
+            for (auto& sprite : sprites_)
+                sprite.setMagFilter(mag_filter);
+
             cout << "using magnification filter: " << resizeFilterName(mag_filter) << endl;
         } break;
 
@@ -160,17 +156,28 @@ void BodyHeadViewer::onKeyEvent(KeyEvent evt)
                 min_filter_idx_ = 0;
 
             Texture::ResizeFilter min_filter = filters[min_filter_idx_];
-            body_sprite_.setMagFilter(min_filter);
-            head_sprite_.setMagFilter(min_filter);
+            
+            for (auto& sprite : sprites_)
+                sprite.setMagFilter(min_filter);
+                
             cout << "using minifying filter: " << resizeFilterName(min_filter) << endl;
         } break;
     }
 
     if (changed_animation)
-        cout << "Animation " << body_sprite_.currentAnimationIndex() << ", frame " << body_sprite_.currentFrameIndex() << endl;
+        cout << "Animation " << sprites_[0].currentAnimationIndex() << ", frame " << sprites_[0].currentFrameIndex() << endl;
 }
 
-void BodyHeadViewer::draw()
+void MultiActViewer::update(double dt)
+{
+    if (!animating_)
+        return;
+        
+    for (auto& sprite : sprites_)
+        sprite.update(dt);
+}
+
+void MultiActViewer::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -184,7 +191,7 @@ void BodyHeadViewer::draw()
     glMatrixMode(GL_MODELVIEW);
 }
 
-void BodyHeadViewer::drawCoordinateAxes()
+void MultiActViewer::drawCoordinateAxes()
 {
     glPushMatrix();
     glBegin(GL_LINES);
@@ -202,52 +209,69 @@ void BodyHeadViewer::drawCoordinateAxes()
     glPopMatrix();
 }
 
-void BodyHeadViewer::drawSprites()
+void MultiActViewer::drawSprites()
 {
     glPushMatrix();
     glTranslated(center_x_, center_y_, 0);
     glScalef(scale_per_ / 100.f, scale_per_ / 100.f, scale_per_ / 100.f);
     
-    body_sprite_.draw();
-    head_sprite_.draw(body_sprite_);
+    auto sprite_iter = sprites_.cbegin();
+    const Sprite& body_sprite = *sprite_iter;
+
+    // The body sprite has no anchor
+    body_sprite.draw();
+
+    // Draw every other sprite using the body one as its anchor
+    while (++sprite_iter != sprites_.cend())
+        sprite_iter->draw(body_sprite);
 
     glPopMatrix();
 }
 
 int main(int argc, const char* argv[])
 {
-    if (argc < 3) {
-        cout << "Usage: " << argv[0] << " <body act file> <head act file>" << endl;
+    if (argc < 3)
+    {
+        cout << "Usage: " << argv[0] << " <body act file> <anchored act file>..." << endl;
+        cout << endl;
+        cout << "Draws a number of act objects anchored by a body act. The order of drawing is that of the arguments." << endl;
+        cout << "So, for example, running '" << argv[0] << " body_act act1 act2' will make 'act1' and 'act2' use 'body_act' as its anchor." << endl;
+
         return 1;
     }
 
-    const char* body_fn = argv[1];
-    const char* head_fn = argv[2];
-    const size_t body_fn_size = strlen(body_fn);
-    const size_t head_fn_size = strlen(head_fn);
-
-    if (body_fn_size < 3 || head_fn_size < 3) {
-        cout << "File name is too short" << endl;
-        return 1;
+    for (int i = 1; i < argc; i++) 
+    {
+        // Ensure every act file's name is at least 3-length long so that we can replace its "act" extension with "spr".
+        if (strlen(argv[i]) < 3)
+        {
+            cout << "File '" << argv[i] << "' extension is too short" << endl;
+            return 1;
+        }
     }
 
     try {
-        Act body_act(readFile(body_fn));
-        Act head_act(readFile(head_fn));
-        
-        // Replace "act" extension with "spr"
-        memcpy(const_cast<char*>(&body_fn[body_fn_size - 3]), "spr", 3);
-        memcpy(const_cast<char*>(&head_fn[head_fn_size - 3]), "spr", 3);
-        
-        Spr body_spr(readFile(body_fn));
-        Spr head_spr(readFile(head_fn));
+        vector<Sprite> sprites;
 
-        Sprite body_sprite(body_act, body_spr);
-        Sprite head_sprite(head_act, head_spr);
+        // Needed since Sprite class neither own Spr nor Act objects
+        vector<unique_ptr<Act>> acts;
+        vector<unique_ptr<Spr>> sprs;
 
-        BodyHeadViewer viewer(move(body_sprite), move(head_sprite));
+        // Tries opening every .act and .spr for each given .act
+        for (int i = 1; i < argc; i++) 
+        {
+            char* filename = const_cast<char*>(argv[i]);
 
-        if (!viewer.show(800, 600, "Body-head viewer")) {
+            acts.emplace_back(make_unique<Act>(readFile(filename)));
+            memcpy(&filename[strlen(filename) - 3], "spr", 3);
+            sprs.emplace_back(make_unique<Spr>(readFile(filename)));
+
+            sprites.emplace_back(Sprite(*acts.back(), *sprs.back()));
+        }
+
+        MultiActViewer viewer(move(sprites));
+
+        if (!viewer.show(800, 600, "Multi act viewer")) {
             cout << "Could not create window" << endl;
             return 1;
         }
