@@ -49,7 +49,7 @@ private:
     void onKeyEvent(KeyEvent evt) override;
     void onMouseWheelEvent(MouseWheelEvent evt) override
     {
-        scale_per_ += evt.y() * 30;
+        scale_per_ += evt.y() * 20;
         cout << "scale: " << scale_per_ << '%' << endl;
     }
     

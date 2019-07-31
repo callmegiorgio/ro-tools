@@ -8,7 +8,8 @@ class KeyEvent {
 public:
 	enum Action {
 		Pressed,
-		Released
+		Released,
+		Repeated,
 	};
 
     explicit KeyEvent(Action action, int keycode, int scancode, ModifierKeys modifiers = ModifierKeys::None)

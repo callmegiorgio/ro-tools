@@ -30,8 +30,18 @@ void Window::Impl::setCallbacks(Window* instance)
 	glfwSetKeyCallback(window,
 		[](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
+			KeyEvent::Action evt_action;
+
+			switch (action)
+			{
+				case GLFW_PRESS: evt_action = KeyEvent::Pressed; break;
+				case GLFW_RELEASE: evt_action = KeyEvent::Released; break;
+				case GLFW_REPEAT: evt_action = KeyEvent::Repeated; break;
+				default: return; // shouldn't happen
+			}
+
 			static_cast<Window*>(glfwGetWindowUserPointer(window))->onKeyEvent(KeyEvent(
-				action == GLFW_PRESS ? KeyEvent::Pressed : KeyEvent::Released,
+				evt_action,
 				key,
 				scancode,
 				static_cast<ModifierKeys>(mods))

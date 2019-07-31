@@ -1,17 +1,19 @@
 #include "Texture.hpp"
 
-static inline GLint resizeFilterGlParam(Texture::ResizeFilter filter)
+static inline bool resizeFilterGlParam(Texture::ResizeFilter filter, GLint& param)
 {
     switch (filter)
     {
-        case Texture::Nearest:              return GL_NEAREST; break;
-        case Texture::Linear:               return GL_LINEAR; break;
-        case Texture::NearestMipmapNearest: return GL_NEAREST_MIPMAP_NEAREST; break;
-        case Texture::NearestMipmapLinear:  return GL_NEAREST_MIPMAP_LINEAR; break;
-        case Texture::LinearMipmapLinear:   return GL_LINEAR_MIPMAP_LINEAR; break;
-        case Texture::LinearMipmapNearest:  return GL_LINEAR_MIPMAP_NEAREST; break;
-        default: return 0;
+        case Texture::Nearest:              param = GL_NEAREST; break;
+        case Texture::Linear:               param = GL_LINEAR; break;
+        case Texture::NearestMipmapNearest: param = GL_NEAREST_MIPMAP_NEAREST; break;
+        case Texture::NearestMipmapLinear:  param = GL_NEAREST_MIPMAP_LINEAR; break;
+        case Texture::LinearMipmapLinear:   param = GL_LINEAR_MIPMAP_LINEAR; break;
+        case Texture::LinearMipmapNearest:  param = GL_LINEAR_MIPMAP_NEAREST; break;
+        default: return false;
     }
+
+    return true;
 }
 
 void Texture::load(unsigned int width, unsigned int height, Format format, const void* data) const
@@ -39,7 +41,9 @@ void Texture::load(unsigned int width, unsigned int height, Format format, const
 
 void Texture::setMinFilter(ResizeFilter filter) const
 {
-    if (GLint param = resizeFilterGlParam(filter))
+    GLint param;
+
+    if (resizeFilterGlParam(filter, param))
     {
         bind();
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, param);
@@ -48,22 +52,23 @@ void Texture::setMinFilter(ResizeFilter filter) const
 
 void Texture::setMagFilter(ResizeFilter filter) const
 {
-    if (filter != Nearest && filter != Linear)
-        return;
+    GLint param;
 
-    bind();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, resizeFilterGlParam(filter));
+    if (resizeFilterGlParam(filter, param))
+    {
+        bind();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, param);
+    }
 }
 
 void Texture::setResizeFilters(ResizeFilter mag_filter, ResizeFilter min_filter) const
 {
-    if (mag_filter != Nearest && mag_filter != Linear)
-        return;
+    GLint mag_param, min_param;
 
-    if (GLint min_param = resizeFilterGlParam(min_filter))
+    if (resizeFilterGlParam(mag_filter, mag_param) && resizeFilterGlParam(min_filter, min_param))
     {
         bind();
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_param);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, resizeFilterGlParam(mag_filter));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
     }
 }
