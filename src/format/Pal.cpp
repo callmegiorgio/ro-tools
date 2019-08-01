@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void Pal::load(Buffer& buf)
+void Pal::load(const Buffer& buf)
 {
     const size_t required_size = colors.size() * 4;
 

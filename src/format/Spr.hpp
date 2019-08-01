@@ -22,20 +22,18 @@ struct Spr {
         std::vector<Color> pixels;
     };
 
-    /**
-     * Constructs from memory buffer.
-     *
-     * @throws InvalidFile on failure.
-     */
-    explicit Spr(Buffer& buf) { load(buf); }
-    explicit Spr(Buffer&& buf) : Spr(buf) {}
+    /// Constructs an empty Spr.
+    explicit Spr() = default;
+
+    /// Constructs and loads from memory buffer.
+    explicit Spr(const Buffer& buf) { load(buf); }
 
     /**
      * Loads from memory buffer.
      *
      * @throws InvalidFile on failure.
      */
-    void load(Buffer& buf);
+    void load(const Buffer& buf);
 
     /// Saves to memory buffer.
     void save(Buffer& buf) const;

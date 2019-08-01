@@ -44,20 +44,18 @@ struct Act {
         std::array<char, 40> filename; // C-string filename in relative sound path
     };
 
-    /**
-     * Construct from memory buffer.
-     *
-     * @throws InvalidFile on failure.
-     */
-    explicit Act(Buffer& buf) { load(buf); }
-    explicit Act(Buffer&& buf) : Act(buf) {}
+    /// Constructs an empty Act.
+    explicit Act() = default;
+    
+    /// Construct and loads from memory buffer.
+    explicit Act(const Buffer& buf) { load(buf); }
 
     /**
      * Loads from memory buffer.
      *
      * @throws InvalidFile on failure.
      */
-    void load(Buffer& buf);
+    void load(const Buffer& buf);
 
     /// Saves to memory buffer.
     void save(Buffer& buf) const;

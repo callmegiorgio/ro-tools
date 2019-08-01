@@ -7,20 +7,19 @@
 #include "../util/Color.hpp"
 
 struct Pal {
-    /**
-     * Constructs from memory buffer.
-     *
-     * @throws InvalidFile on failure.
-     */
-    explicit Pal(Buffer& buf) { load(buf); }
-    explicit Pal(Buffer&& buf) : Pal(buf) {}
+    
+    /// Constructs an empty Pal.
+    explicit Pal() = default;
+
+    /// Constructs and loads from memory buffer.
+    explicit Pal(const Buffer& buf) { load(buf); }
 
     /**
      * Loads from memory buffer.
      *
      * @throws InvalidFile on failure.
      */
-    void load(Buffer& buf);
+    void load(const Buffer& buf);
 
     /// Saves to memory buffer.
     void save(Buffer& buf) const;

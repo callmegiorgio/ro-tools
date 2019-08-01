@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void Act::load(Buffer& buf)
+void Act::load(const Buffer& buf)
 try {
     const char act_magic[] = {'A', 'C'};
     char magic[sizeof(act_magic)];

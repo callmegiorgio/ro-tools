@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void Spr::load(Buffer& buf)
+void Spr::load(const Buffer& buf)
 try {
     const char spr_magic[] = {'S', 'P'};
     char magic[sizeof(spr_magic)];
