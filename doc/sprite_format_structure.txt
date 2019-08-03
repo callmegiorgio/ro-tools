@@ -1,0 +1,44 @@
+# RGBA palette
+palette_colors: uint32[256]
+
+# Images
+image_count: uint8
+images[image_count]:
+{
+	width: uint16
+	height: uint16
+	indices: uint8[width * height]
+}
+
+# Sounds
+sound_count: uint8
+sounds[sound_count]:
+{
+	filename: char[40]
+}
+
+# Animations
+animation_count: uint8
+animations[animation_count]:
+{
+	delay: uint16
+	frame_count: uint8
+	frames[frame_count]:
+	{
+		layer_count: uint8
+		layers[layer_count]:
+		{
+			image_index: uint8
+			x: uint16
+			y: uint16
+			rotation: uint16
+			scale_x: float
+			scale_y: float
+			color: uint32
+			mirror: false
+		}
+		anchor_x: uint16
+		anchor_y: uint16
+		sound_index: int8
+	}
+}

@@ -1,9 +1,8 @@
 #include <cstring>
 #include <iostream>
 #include <glad/glad.h>
-#include "../format/Act.hpp"
-#include "../format/Spr.hpp"
-#include "../gl/ROSprite.hpp"
+#include "../format/Sprite.hpp"
+#include "../gl/ApolloSprite.hpp"
 #include "../gl/Texture.hpp"
 #include "../util/filehandler.hpp"
 #include "../window/Window.hpp"
@@ -12,9 +11,9 @@ using namespace std;
 using namespace format;
 using namespace gl;
 
-class ActViewer : public Window {
+class SpriteViewer : public Window {
 public:
-    explicit ActViewer(ROSprite sprite)
+    explicit SpriteViewer(ApolloSprite sprite)
         : sprite_{ std::move(sprite) } {}
 
     void setup();
@@ -31,12 +30,12 @@ private:
     void draw() override;
     void drawCoordinateAxes();
 
-    ROSprite sprite_;
+    ApolloSprite sprite_;
     int center_x_, center_y_;
     bool animating_ = true;
 };
 
-void ActViewer::setup()
+void SpriteViewer::setup()
 {
     sprite_.load();
 
@@ -50,7 +49,7 @@ void ActViewer::setup()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void ActViewer::onKeyEvent(KeyEvent evt)
+void SpriteViewer::onKeyEvent(KeyEvent evt)
 {
     if (evt.action() != KeyEvent::Pressed)
         return;
@@ -93,7 +92,7 @@ void ActViewer::onKeyEvent(KeyEvent evt)
         cout << "Animation " << sprite_.currentAnimationIndex() << ", frame " << sprite_.currentFrameIndex() << endl;
 }
 
-void ActViewer::draw()
+void SpriteViewer::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -111,7 +110,7 @@ void ActViewer::draw()
     glMatrixMode(GL_MODELVIEW);
 }
 
-void ActViewer::drawCoordinateAxes()
+void SpriteViewer::drawCoordinateAxes()
 {
     glPushMatrix();
     glBegin(GL_LINES);
@@ -132,35 +131,17 @@ void ActViewer::drawCoordinateAxes()
 int main(int argc, const char* argv[])
 {
     if (argc < 2) {
-        cout << "Usage: " << argv[0] << " <act file>" << endl;
-        return 1;
-    }
-
-    const char* filename = argv[1];
-    const size_t filename_size = strlen(filename);
-
-    if (filename_size < 3) {
-        cout << "File name is too short" << endl;
+        cout << "Usage: " << argv[0] << " <sprite file>" << endl;
         return 1;
     }
 
     try {
-        Act act(readFile(filename));
-        
-        // Replace "act" extension with "spr"
-        memcpy(const_cast<char*>(&filename[filename_size - 3]), "spr", 3);
-        
-        Spr spr(readFile(filename));
+        format::Sprite sprite(readFile(argv[1]));
 
-        if (!spr.pal) {
-            cout << "File '" << filename << "' has no palette" << endl;
-            return 1;
-        }
+        ApolloSprite ap_sprite(sprite, sprite.pal);
+        SpriteViewer viewer(move(ap_sprite));
 
-        ROSprite sprite(act, spr, *spr.pal);
-        ActViewer viewer(move(sprite));
-
-        if (!viewer.show(800, 600, "Act viewer")) {
+        if (!viewer.show(800, 600, "Sprite viewer")) {
             cout << "Could not create window" << endl;
             return 1;
         }

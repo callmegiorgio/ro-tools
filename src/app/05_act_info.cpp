@@ -5,6 +5,7 @@
 #include "../util/filehandler.hpp"
 
 using namespace std;
+using namespace format;
 
 int main(int argc, const char* argv[])
 {

@@ -10,6 +10,7 @@
 #include "../util/filehandler.hpp"
 
 using namespace std;
+using namespace format;
 
 void exportBmpFile(const string& path, const string& filename, int width, int height, int channels, const void* pixels)
 {
@@ -48,7 +49,7 @@ int main(int argc, const char* argv[])
         // Try opening the file and creating spr object
         Spr spr(readFile(spr_fn));
 
-        // Remove the spr filename path if any.
+        // Remove the path from spr filename if any.
         if (const char* p = strrchr(argv[1], '/'))
             spr_fn = p+1;
         else if (const char* p = strrchr(argv[1], '\\'))
@@ -63,7 +64,7 @@ int main(int argc, const char* argv[])
         string bmp_path;
 
         if (argc > 2)
-            bmp_path.assign(strchr("/\\", argv[2][0]) ? argv[2] : string(argv[2]) + '/');
+            bmp_path.assign(strchr("/\\", argv[2][strlen(argv[2]) - 1]) ? argv[2] : string(argv[2]) + '/');
 
         string spr_name = string(spr_fn, spr_fn_len);
 

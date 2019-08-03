@@ -5,12 +5,14 @@
 #include <glad/glad.h>
 #include "../format/Act.hpp"
 #include "../format/Spr.hpp"
-#include "../gl/Sprite.hpp"
+#include "../gl/ROSprite.hpp"
 #include "../gl/Texture.hpp"
 #include "../util/filehandler.hpp"
 #include "../window/Window.hpp"
 
 using namespace std;
+using namespace format;
+using namespace gl;
 
 constexpr static array<Texture::ResizeFilter, 6> filters {
     Texture::Nearest,
@@ -38,7 +40,7 @@ static const char* resizeFilterName(Texture::ResizeFilter filter)
 
 class MultiActViewer : public Window {
 public:
-    explicit MultiActViewer(vector<Sprite> sprites)
+    explicit MultiActViewer(vector<ROSprite> sprites)
         : sprites_{ std::move(sprites) } {}
 
     void setup();
@@ -59,7 +61,7 @@ private:
     void drawSprites();
 
     // Sprites in their anchor dependency order i.e. sprites_[0] has no dependency
-    vector<Sprite> sprites_;
+    vector<ROSprite> sprites_;
 
     int center_x_, center_y_;
     int scale_per_ = 100;
@@ -70,13 +72,7 @@ private:
 void MultiActViewer::setup()
 {
     for (auto& sprite : sprites_)
-    {
-        if (!sprite.load()) {
-            cout << "Could not load sprite" << endl;
-            Window::close();
-            return;
-        }
-    }
+        sprite.load();
 
     center_x_ = width() / 2;
     center_y_ = height() / 2;
@@ -216,7 +212,7 @@ void MultiActViewer::drawSprites()
     glScalef(scale_per_ / 100.f, scale_per_ / 100.f, scale_per_ / 100.f);
     
     auto sprite_iter = sprites_.cbegin();
-    const Sprite& body_sprite = *sprite_iter;
+    const ROSprite& body_sprite = *sprite_iter;
 
     // The body sprite has no anchor
     body_sprite.draw();
@@ -251,7 +247,7 @@ int main(int argc, const char* argv[])
     }
 
     try {
-        vector<Sprite> sprites;
+        vector<ROSprite> sprites;
 
         // Needed since Sprite class neither own Spr nor Act objects
         vector<unique_ptr<Act>> acts;
@@ -262,11 +258,18 @@ int main(int argc, const char* argv[])
         {
             char* filename = const_cast<char*>(argv[i]);
 
-            acts.emplace_back(make_unique<Act>(readFile(filename)));
+            auto act = make_unique<Act>(readFile(filename));
             memcpy(&filename[strlen(filename) - 3], "spr", 3);
-            sprs.emplace_back(make_unique<Spr>(readFile(filename)));
+            auto spr = make_unique<Spr>(readFile(filename));
 
-            sprites.emplace_back(Sprite(*acts.back(), *sprs.back()));
+            if (!spr->pal) {
+                cout << "File '" << filename << "' has no palette, skipping..." << endl;
+                continue;
+            }
+
+            sprites.emplace_back(ROSprite(*act, *spr, *(spr->pal)));
+            acts.emplace_back(move(act));
+            sprs.emplace_back(move(spr));
         }
 
         MultiActViewer viewer(move(sprites));

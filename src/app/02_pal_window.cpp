@@ -6,6 +6,7 @@
 #include "../window/Window.hpp"
 
 using namespace std;
+using namespace format;
 
 class PalWindow : public Window {
 public:

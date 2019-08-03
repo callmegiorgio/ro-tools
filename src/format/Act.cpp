@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace format {
+
 void Act::load(const Buffer& buf)
 try {
     const char act_magic[] = {'A', 'C'};
@@ -143,3 +145,5 @@ void Act::save(Buffer& buf) const
 }
 
 static_assert(sizeof(float) == 4, "float size is not 4 bytes");
+
+} // namespace format

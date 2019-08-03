@@ -1,8 +1,10 @@
-#ifndef RO_TEXTURE_HPP
-#define RO_TEXTURE_HPP
+#ifndef ROTOOLS_GL_TEXTURE_HPP
+#define ROTOOLS_GL_TEXTURE_HPP
 
 #include <utility>
 #include <glad/glad.h>
+
+namespace gl {
 
 class Texture final {
 public:
@@ -78,4 +80,6 @@ private:
     GLuint id_ = 0;
 };
 
-#endif // RO_TEXTURE_HPP
+} // namespace gl
+
+#endif // ROTOOLS_GL_TEXTURE_HPP

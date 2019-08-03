@@ -1,10 +1,12 @@
-#ifndef RO_ACT_HPP
-#define RO_ACT_HPP
+#ifndef ROTOOLS_FORMAT_ACT_HPP
+#define ROTOOLS_FORMAT_ACT_HPP
 
 #include <array>
 #include <vector>
 #include "../util/Buffer.hpp"
 #include "../util/Color.hpp"
+
+namespace format {
 
 struct Act {
     struct Image {
@@ -65,4 +67,6 @@ struct Act {
     std::vector<Sound> sounds;
 };
 
-#endif // RO_ACT_HPP
+} // namespace format
+
+#endif // ROTOOLS_FORMAT_ACT_HPP

@@ -7,6 +7,8 @@
 
 using namespace std;
 
+namespace format {
+
 void Spr::load(const Buffer& buf)
 try {
     const char spr_magic[] = {'S', 'P'};
@@ -124,3 +126,5 @@ void Spr::save(Buffer& buf) const
 {
 
 }
+
+} // namespace format

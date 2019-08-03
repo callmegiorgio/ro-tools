@@ -1,5 +1,7 @@
 #include "Texture.hpp"
 
+namespace gl {
+
 static inline bool resizeFilterGlParam(Texture::ResizeFilter filter, GLint& param)
 {
     switch (filter)
@@ -72,3 +74,5 @@ void Texture::setResizeFilters(ResizeFilter mag_filter, ResizeFilter min_filter)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
     }
 }
+
+} // namespace gl

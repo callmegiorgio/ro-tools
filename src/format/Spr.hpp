@@ -1,5 +1,5 @@
-#ifndef RO_SPR_HPP
-#define RO_SPR_HPP
+#ifndef ROTOOLS_FORMAT_SPR_HPP
+#define ROTOOLS_FORMAT_SPR_HPP
 
 #include <cstdint>
 #include <memory>
@@ -8,6 +8,8 @@
 #include "Pal.hpp"
 #include "../util/Buffer.hpp"
 #include "../util/Color.hpp"
+
+namespace format {
 
 struct Spr {
     struct PaletteImage {
@@ -44,4 +46,6 @@ struct Spr {
     std::unique_ptr<Pal> pal;
 };
 
-#endif // RO_SPR_HPP
+} // namespace format
+
+#endif // ROTOOLS_FORMAT_SPR_HPP

@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace format {
+
 void Pal::load(const Buffer& buf)
 {
     const size_t required_size = colors.size() * 4;
@@ -23,6 +25,15 @@ void Pal::load(const Buffer& buf)
 
 void Pal::save(Buffer& buf) const
 {
+    buf.grow(colors.size() * 4);
+
     for (const Color& color : colors)
-        ; //buf << color.r << color.g << color.b << color.a;
+    {
+        buf.setUint8(color.r);
+        buf.setUint8(color.g);
+        buf.setUint8(color.b);
+        buf.setUint8(color.a);
+    }
 }
+
+} // namespace format

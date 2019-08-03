@@ -1,7 +1,10 @@
 message(STATUS "Creating target rogl")
 
 set(SOURCE_FILES
-    "Sprite.cpp"
+    "ApolloSprite.cpp"
+    "ApolloSprite.hpp"
+    "ROSprite.cpp"
+    "ROSprite.hpp"
     "Sprite.hpp"
     "Texture.cpp"
     "Texture.hpp")

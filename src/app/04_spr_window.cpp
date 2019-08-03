@@ -7,6 +7,8 @@
 #include "../window/Window.hpp"
 
 using namespace std;
+using namespace format;
+using namespace gl;
 
 class SprWindow : public Window
 {

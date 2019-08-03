@@ -9,6 +9,8 @@
 #include "../window/Window.hpp"
 
 using namespace std;
+using namespace format;
+using namespace gl;
 
 class SprCustomPalWindow : public Window
 {

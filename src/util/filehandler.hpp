@@ -29,10 +29,10 @@ Buffer readFile(const char* filename)
     const size_t size = ifs.tellg();
     ifs.seekg(0, ifs.beg);
 
-    uint8_t* buf = new uint8_t[size];
-    ifs.read(reinterpret_cast<char*>(buf), size);
+    std::vector<uint8_t> buf(size);
+    ifs.read(reinterpret_cast<char*>(buf.data()), size);
 
-    return Buffer(buf, size);
+    return Buffer(std::move(buf));
 }
 
 void writeFile(const char* filename, const Buffer& buf)
