@@ -1,10 +1,9 @@
-#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <cstring>
 #include <iostream>
 #include <vector>
 #include <string>
 #include <string_view>
-#include <stb/stb_image_write.h>
+#include "../format/Image.hpp"
 #include "../format/Spr.hpp"
 #include "../util/Buffer.hpp"
 #include "../util/filehandler.hpp"
@@ -14,22 +13,16 @@ using namespace format;
 
 void exportBmpFile(const string& path, const string& filename, int width, int height, int channels, const void* pixels)
 {
+    string bmp_fn(path + filename);
+    
     Buffer buffer;
 
-    // Create bmp file structure out of the pixels above and write it to the buffer.
-    stbi_write_bmp_to_func(
-        [](void* context, void* data, int size)
-        {
-            reinterpret_cast<Buffer*>(context)->write(data, size);
-        },
-        &buffer, width, height, channels, pixels);
-
-    string bmp_fn(path + filename);
-
     try {
+        Image::saveAsBmp(buffer, width, height, channels, pixels);
+
         // Try writing it to disk
         writeFile(bmp_fn.c_str(), buffer);
-        cout << "Exported bmp: " << bmp_fn << endl;
+        cout << "Exported bmp: " << bmp_fn << " (" << width << 'x' << height << 'x' << channels << ')' << endl;
     }
     catch (const exception& e) {
         cout << "Error saving bmp: " << e.what() << endl;
@@ -74,7 +67,7 @@ int main(int argc, const char* argv[])
             {
                 const Spr::PaletteImage& image = spr.palette_images[i];
                 
-                vector<uint8_t> pixels(image.indices.size() * 3);
+                std::vector<uint8_t> pixels(image.indices.size() * 4);
 
                 // Generate the pixels from the combination of indices and palette colors.
                 for (int j = 0; j < image.indices.size(); j++)
@@ -82,13 +75,14 @@ int main(int argc, const char* argv[])
                     uint8_t index = image.indices[j];
                     const Color& color = spr.pal->colors[index];
                     
-                    pixels[j*3 + 0] = color.r;
-                    pixels[j*3 + 1] = color.g;
-                    pixels[j*3 + 2] = color.b;
+                    pixels[j*4 + 0] = color.r;
+                    pixels[j*4 + 1] = color.g;
+                    pixels[j*4 + 2] = color.b;
+                    pixels[j*4 + 3] = 255;
                 }
                 
                 // filename.spr -> path/filename_i.bmp
-                exportBmpFile(bmp_path, spr_name + '_' + to_string(i+1) + ".bmp", image.width, image.height, 3, pixels.data());
+                exportBmpFile(bmp_path, spr_name + '_' + to_string(i+1) + ".bmp", image.width, image.height, 4, pixels.data());
             }
         }
 

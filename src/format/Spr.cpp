@@ -3,7 +3,7 @@
 #include <cstring>
 #include <fstream>
 #include <vector>
-#include "../util/InvalidFile.hpp"
+#include "../util/InvalidResource.hpp"
 
 using namespace std;
 
@@ -18,7 +18,7 @@ try {
 
     // Check magic
     if (strncmp(magic, spr_magic, sizeof(spr_magic)) != 0)
-        throw InvalidFile("spr: invalid magic, expected 'SP'");
+        throw InvalidResource("spr: invalid magic, expected 'SP'");
 
     // Get version
     int hex_version = buf.readUint16();
@@ -33,7 +33,7 @@ try {
         case 0x201:
             break; // supported    
         default:
-            throw InvalidFile("spr: unsupported version '" + to_string(version.major) + '.' + to_string(version.minor) + "'");
+            throw InvalidResource("spr: unsupported version '" + to_string(version.major) + '.' + to_string(version.minor) + "'");
     }
 
     // Get palette images count
@@ -79,7 +79,7 @@ try {
                         len = 1;
 
                     if ((i + len) > pixel_count)
-                        throw InvalidFile("spr: too much encoded data for pal image");
+                        throw InvalidResource("spr: too much encoded data for pal image");
 
                     memset(&img.indices[i], 0, len);
                     i += len;
@@ -119,7 +119,7 @@ try {
         pal = make_unique<Pal>(buf);
 }
 catch (const out_of_range&) {
-    throw InvalidFile("spr: missing data");
+    throw InvalidResource("spr: missing data");
 }
 
 void Spr::save(Buffer& buf) const

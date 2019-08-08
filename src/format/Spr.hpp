@@ -33,14 +33,14 @@ struct Spr {
     /**
      * Loads from memory buffer.
      *
-     * @throws InvalidFile on failure.
+     * @throws InvalidResource on failure.
      */
     void load(const Buffer& buf);
 
     /// Saves to memory buffer.
     void save(Buffer& buf) const;
 
-    struct { int major, minor; } version;
+    struct { uint8_t major, minor; } version;
     std::vector<PaletteImage> palette_images;
     std::vector<RgbaImage> rgba_images;
     std::unique_ptr<Pal> pal;

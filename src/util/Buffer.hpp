@@ -54,90 +54,110 @@ public:
         current_idx_ += n;
     }
 
-    /// Increases the buffer's size in n bytes.
+    /**
+     * Increases the buffer's size in n bytes.
+     *
+     * @throws std::bad_alloc if allocation fails.
+     */
     void grow(size_t n) { data_.resize(size() + n); }
 
-    /// Skips n bytes of data.
-    void skip(size_t n) const noexcept { current_idx_ += n; }
+    /**
+     * Skips n bytes of data.
+     *
+     * @throws std::out_of_range if n exceeds buffer range.
+     */
+    void skip(size_t n) const
+    {
+        checkRange(n);
+        current_idx_ += n;
+    }
 
-    /// Reads integers with range checking.
-    uint8_t  readUint8()  const { return readIntegral<uint8_t>(); }
-    uint16_t readUint16() const { return readIntegral<uint16_t>(); }
-    uint32_t readUint32() const { return readIntegral<uint32_t>(); }
-    uint64_t readUint64() const { return readIntegral<uint64_t>(); }
+    /// Reads numbers with range checking.
+    uint8_t  readUint8()  const { return readNumber<uint8_t>(); }
+    uint16_t readUint16() const { return readNumber<uint16_t>(); }
+    uint32_t readUint32() const { return readNumber<uint32_t>(); }
+    uint64_t readUint64() const { return readNumber<uint64_t>(); }
     int8_t   readInt8()   const { return static_cast<int8_t>(readUint8()); }
     int16_t  readInt16()  const { return static_cast<int16_t>(readUint16()); }
     int32_t  readInt32()  const { return static_cast<int32_t>(readUint32()); }
     int64_t  readInt64()  const { return static_cast<int64_t>(readUint64()); }
+    float    readFloat()  const { return readNumber<float>(); }
+    double   readDouble() const { return readNumber<double>(); }
 
-    /// Reads integers without range checking.
-    uint8_t  getUint8()  const noexcept { return getIntegral<uint8_t>(); }
-    uint16_t getUint16() const noexcept { return getIntegral<uint16_t>(); }
-    uint32_t getUint32() const noexcept { return getIntegral<uint32_t>(); }
-    uint64_t getUint64() const noexcept { return getIntegral<uint64_t>(); }
+    /// Reads numbers without range checking.
+    uint8_t  getUint8()  const noexcept { return getNumber<uint8_t>(); }
+    uint16_t getUint16() const noexcept { return getNumber<uint16_t>(); }
+    uint32_t getUint32() const noexcept { return getNumber<uint32_t>(); }
+    uint64_t getUint64() const noexcept { return getNumber<uint64_t>(); }
     int8_t   getInt8()   const noexcept { return static_cast<int8_t>(getUint8()); }
     int16_t  getInt16()  const noexcept { return static_cast<int16_t>(getUint16()); }
     int32_t  getInt32()  const noexcept { return static_cast<int32_t>(getUint32()); }
     int64_t  getInt64()  const noexcept { return static_cast<int64_t>(getUint64()); }
+    float    getFloat()  const noexcept { return getNumber<float>(); }
+    double   getDouble() const noexcept { return getNumber<double>(); }
 
-    /// Writes integers allocating memory as needed.
-    void writeUint8(uint8_t value)   noexcept { writeIntegral<uint8_t>(value); }
-    void writeUint16(uint16_t value) noexcept { writeIntegral<uint16_t>(value); }
-    void writeUint32(uint32_t value) noexcept { writeIntegral<uint32_t>(value); }
-    void writeUint64(uint64_t value) noexcept { writeIntegral<uint64_t>(value); }
-    void writeInt8(int8_t value)     noexcept { writeUint8(static_cast<int8_t>(value)); }
-    void writeInt16(int16_t value)   noexcept { writeUint16(static_cast<int16_t>(value)); }
-    void writeInt32(int32_t value)   noexcept { writeUint32(static_cast<int32_t>(value)); }
-    void writeInt64(int64_t value)   noexcept { writeUint64(static_cast<int64_t>(value)); }
+    /// Writes numbers allocating memory as needed.
+    void writeUint8(uint8_t value)   { writeNumber<uint8_t>(value); }
+    void writeUint16(uint16_t value) { writeNumber<uint16_t>(value); }
+    void writeUint32(uint32_t value) { writeNumber<uint32_t>(value); }
+    void writeUint64(uint64_t value) { writeNumber<uint64_t>(value); }
+    void writeInt8(int8_t value)     { writeUint8(static_cast<int8_t>(value)); }
+    void writeInt16(int16_t value)   { writeUint16(static_cast<int16_t>(value)); }
+    void writeInt32(int32_t value)   { writeUint32(static_cast<int32_t>(value)); }
+    void writeInt64(int64_t value)   { writeUint64(static_cast<int64_t>(value)); }
+    void writeFloat(float value)     { writeNumber<float>(value); }
+    void writeDouble(double value)   { writeNumber<double>(value); }
 
-    /// Writes integers without memory allocation.
-    void setUint8(uint8_t value)   noexcept { setIntegral<uint8_t>(value); }
-    void setUint16(uint16_t value) noexcept { setIntegral<uint16_t>(value); }
-    void setUint32(uint32_t value) noexcept { setIntegral<uint32_t>(value); }
-    void setUint64(uint64_t value) noexcept { setIntegral<uint64_t>(value); }
+    /// Writes numbers without memory allocation.
+    void setUint8(uint8_t value)   noexcept { setNumber<uint8_t>(value); }
+    void setUint16(uint16_t value) noexcept { setNumber<uint16_t>(value); }
+    void setUint32(uint32_t value) noexcept { setNumber<uint32_t>(value); }
+    void setUint64(uint64_t value) noexcept { setNumber<uint64_t>(value); }
     void setInt8(int8_t value)     noexcept { setUint8(static_cast<int8_t>(value)); }
     void setInt16(int16_t value)   noexcept { setUint16(static_cast<int16_t>(value)); }
     void setInt32(int32_t value)   noexcept { setUint32(static_cast<int32_t>(value)); }
     void setInt64(int64_t value)   noexcept { setUint64(static_cast<int64_t>(value)); }
+    void setFloat(float value)     noexcept { setNumber<float>(value); }
+    void setDouble(double value)   noexcept { setNumber<double>(value); }
 
 private:
-    /// Generic throwing integral read function.
-    template <typename Integral>
-    Integral readIntegral() const
+    /// Generic throwing numeric read function.
+    template <typename Number>
+    Number readNumber() const
     {
-        checkRange(sizeof(Integral));
-        return getIntegral<Integral>();
+        checkRange(sizeof(Number));
+        return getNumber<Number>();
     }
 
-    /// Generic non-throwing integral read function.
-    template <typename Integral>
-    Integral getIntegral() const noexcept
+    /// Generic non-throwing numeric read function.
+    template <typename Number>
+    Number getNumber() const noexcept
     {
-        Integral value = *reinterpret_cast<const Integral*>(&data_[current_idx_]);
-        current_idx_ += sizeof(Integral);
+        Number value = *reinterpret_cast<const Number*>(&data_[current_idx_]);
+        current_idx_ += sizeof(Number);
         return value;
     }
 
-    /// Generic throwing integral write function.
-    template <typename Integral>
-    void writeIntegral(Integral value)
+    /// Generic buffer-growing numeric write function.
+    template <typename Number>
+    void writeNumber(Number value)
     {
         try {
-            checkRange(sizeof(Integral));
+            checkRange(sizeof(Number));
         }
         catch (const std::out_of_range&) {
-            grow(sizeof(Integral));
+            grow(sizeof(Number));
         }
 
-        setIntegral<Integral>(value);
+        setNumber<Number>(value);
     }
 
-    /// Generic non-throwing integral write function.
-    template <typename Integral>
-    void setIntegral(Integral value) noexcept
+    /// Generic non-throwing number write function.
+    template <typename Number>
+    void setNumber(Number value) noexcept
     {
-        *reinterpret_cast<Integral*>(&data_[current_idx_]) = value;
-        current_idx_ += sizeof(Integral);
+        *reinterpret_cast<Number*>(&data_[current_idx_]) = value;
+        current_idx_ += sizeof(Number);
     }
 
     /// Throws an std::out_of_range exception if trying to access an index beyond buffer range.
@@ -146,5 +166,8 @@ private:
     std::vector<uint8_t> data_;
     mutable size_t current_idx_ = 0;
 };
+
+static_assert(sizeof(float) == 4, "float size is not 4 bytes");
+static_assert(sizeof(double) == 8, "double size is not 8 bytes");
 
 #endif // RO_BUFFER_HPP

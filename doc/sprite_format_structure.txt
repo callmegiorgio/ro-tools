@@ -29,16 +29,16 @@ animations[animation_count]:
 		layers[layer_count]:
 		{
 			image_index: uint8
-			x: uint16
-			y: uint16
+			x: int16
+			y: int16
 			rotation: uint16
 			scale_x: float
 			scale_y: float
 			color: uint32
 			mirror: false
 		}
-		anchor_x: uint16
-		anchor_y: uint16
+		anchor_x: int16
+		anchor_y: int16
 		sound_index: int8
 	}
 }

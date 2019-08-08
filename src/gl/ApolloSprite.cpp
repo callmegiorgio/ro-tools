@@ -97,13 +97,13 @@ void ApolloSprite::load()
     for (const format::Sprite::Image& img : sprite_.images)
     {
         // First palette color is the transparency color.
-        const Color& transp_color = palette_.colors[0];
+        const Color& transp_color = pal_.colors[0];
         vector<uint8_t> pixels(img.indices.size() * 4);
 
         for (int i = 0; i < img.indices.size(); i++)
         {
             uint8_t index = img.indices[i];
-            const Color& color = palette_.colors[index];
+            const Color& color = pal_.colors[index];
 
             pixels[i*4 + 0] = color.r;
             pixels[i*4 + 1] = color.g;

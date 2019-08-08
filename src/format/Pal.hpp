@@ -19,7 +19,7 @@ struct Pal {
     /**
      * Loads from memory buffer.
      *
-     * @throws InvalidFile on failure.
+     * @throws InvalidResource on failure.
      */
     void load(const Buffer& buf);
 

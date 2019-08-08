@@ -1,7 +1,8 @@
 #include "Act.hpp"
 
+#include <cstring>
 #include <cmath>
-#include "../util/InvalidFile.hpp"
+#include "../util/InvalidResource.hpp"
 
 using namespace std;
 
@@ -16,7 +17,7 @@ try {
 
     // Check magic
     if (strncmp(magic, act_magic, sizeof(act_magic)) != 0)
-        throw InvalidFile("act: invalid magic, expected 'AC'");
+        throw InvalidResource("act: invalid magic, expected 'AC'");
 
     const int hex_version = buf.readUint16();
     version.major = (hex_version >> 8) & 0xFF;
@@ -33,7 +34,7 @@ try {
 		case 0x205:
             break; // supported
         default:
-            throw InvalidFile("act: unsupported version '" + to_string(version.major) + '.' + to_string(version.minor) + "'");
+            throw InvalidResource("act: unsupported version '" + to_string(version.major) + '.' + to_string(version.minor) + "'");
     }
 
     // Animation count
@@ -70,15 +71,11 @@ try {
                     image.color = Color(buf.readUint32());
 
                     if (hex_version >= 0x204) {
-                        buf.read(&image.scale_x, sizeof(float));
-                        buf.read(&image.scale_y, sizeof(float));
-                        image.scale_x = round(image.scale_x);
-                        image.scale_y = round(image.scale_y);
+                        image.scale_x = round(buf.readFloat());
+                        image.scale_y = round(buf.readFloat());
                     }
                     else {
-                        buf.read(&image.scale_x, sizeof(float));
-                        image.scale_x = round(image.scale_x);
-                        image.scale_y = image.scale_x;
+                        image.scale_x = image.scale_y = round(buf.readFloat());
                     }
 
                     image.rotation = buf.readUint32();
@@ -129,21 +126,16 @@ try {
     if (hex_version >= 0x202)
     {
         for (Animation& anim : animations)
-        {
-            buf.read(&anim.delay, sizeof(float));
-            anim.delay = round(anim.delay);
-        }
+            anim.delay = round(buf.readFloat());
     }
 }
 catch (const out_of_range&) {
-    throw InvalidFile("act: missing data");
+    throw InvalidResource("act: missing data");
 }
 
 void Act::save(Buffer& buf) const
 {
 
 }
-
-static_assert(sizeof(float) == 4, "float size is not 4 bytes");
 
 } // namespace format

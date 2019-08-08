@@ -9,6 +9,7 @@ namespace gl {
 class Texture final {
 public:
     enum Format {
+        Gray,
         Red,
         Rgb,
         Rgba
@@ -37,7 +38,10 @@ public:
     }
 
     /// Move constructor.
-    explicit Texture(Texture&& other) : id_{ std::exchange(other.id_, 0) } {}
+    explicit Texture(Texture&& other)
+        : id_{ std::exchange(other.id_, 0) }
+        , width_{ std::exchange(other.width_, 0) }
+        , height_{ std::exchange(other.height_, 0) } {}
 
     /// no copy contructor
     explicit Texture(const Texture&) = delete;
@@ -49,7 +53,7 @@ public:
     }
     
     /// Loads image data into the texture buffer.
-    void load(unsigned int width, unsigned int height, Format format, const void* data) const;
+    void load(unsigned int width, unsigned int height, Format format, const void* data);
 
     /// Sets texture minifying filter.
     void setMinFilter(ResizeFilter filter) const;
@@ -66,10 +70,15 @@ public:
     /// Texture id.
     GLuint id() const { return id_; }
 
+    int width() const { return width_; }
+    int height() const { return height_; }
+
     // Move assignment.
     Texture& operator=(Texture&& other)
     {
         id_ = std::exchange(other.id_, 0);
+        width_ = std::exchange(other.width_, 0);
+        height_ = std::exchange(other.height_, 0);
         return *this;
     }
 
@@ -78,6 +87,8 @@ public:
 
 private:
     GLuint id_ = 0;
+    int width_ = 0;
+    int height_ = 0;
 };
 
 } // namespace gl

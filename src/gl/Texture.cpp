@@ -18,7 +18,7 @@ static inline bool resizeFilterGlParam(Texture::ResizeFilter filter, GLint& para
     return true;
 }
 
-void Texture::load(unsigned int width, unsigned int height, Format format, const void* data) const
+void Texture::load(unsigned int width, unsigned int height, Format format, const void* data)
 {
     GLenum gl_format;
 
@@ -39,6 +39,9 @@ void Texture::load(unsigned int width, unsigned int height, Format format, const
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    width_ = width;
+    height_ = height;
 }
 
 void Texture::setMinFilter(ResizeFilter filter) const

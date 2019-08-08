@@ -18,7 +18,7 @@ private:
     std::string what_;
 };
 
-Buffer readFile(const char* filename)
+inline Buffer readFile(const char* filename)
 {
     // Open file and set cursor at the end
     std::ifstream ifs(filename, std::ifstream::binary | std::ifstream::ate);
@@ -35,7 +35,7 @@ Buffer readFile(const char* filename)
     return Buffer(std::move(buf));
 }
 
-void writeFile(const char* filename, const Buffer& buf)
+inline void writeFile(const char* filename, const Buffer& buf)
 {
     if (!buf.size())
         return;

@@ -2,16 +2,16 @@
 #define ROTOOLS_GL_APOLLOSPRITE_HPP
 
 #include "Sprite.hpp"
-#include "../format/Palette.hpp"
+#include "../format/Pal.hpp"
 #include "../format/Sprite.hpp"
 
 namespace gl {
 
 class ApolloSprite final : public gl::Sprite {
 public:
-    explicit ApolloSprite(const format::Sprite& sprite, const format::Palette& palette)
+    explicit ApolloSprite(const format::Sprite& sprite, const format::Pal& pal)
         : sprite_{ sprite }
-        , palette_{ palette } {}
+        , pal_{ pal } {}
 
     void load() override;
 
@@ -31,7 +31,7 @@ private:
     void draw(int offset_x, int offset_y) const;
 
     const format::Sprite& sprite_;
-    const format::Palette& palette_;
+    const format::Pal& pal_;
 
 };
 

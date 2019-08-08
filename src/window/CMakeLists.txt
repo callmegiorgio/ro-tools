@@ -13,5 +13,6 @@ set(SOURCE_FILES
     "Window.hpp")
 
 add_library(rowindow STATIC ${SOURCE_FILES})
+target_link_libraries(rowindow glfw GL dl)
 
 message(STATUS "Creating target rowindow - done")

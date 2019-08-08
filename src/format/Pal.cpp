@@ -1,7 +1,7 @@
 #include "Pal.hpp"
 
 #include <string>
-#include "../util/InvalidFile.hpp"
+#include "../util/InvalidResource.hpp"
 
 using namespace std;
 
@@ -12,7 +12,7 @@ void Pal::load(const Buffer& buf)
     const size_t required_size = colors.size() * 4;
 
     if (buf.remaining() < required_size)
-        throw InvalidFile("pal: invalid size " + to_string(buf.remaining()) + ", expected " + to_string(required_size));
+        throw InvalidResource("pal: invalid size " + to_string(buf.remaining()) + ", expected " + to_string(required_size));
     
     for (Color& color : colors)
     {

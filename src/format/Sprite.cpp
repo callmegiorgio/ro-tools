@@ -1,6 +1,6 @@
 #include "Sprite.hpp"
 
-#include "../util/InvalidFile.hpp"
+#include "../util/InvalidResource.hpp"
 
 using namespace std;
 
@@ -73,7 +73,7 @@ try {
     }
 }
 catch (const out_of_range&) {
-    throw InvalidFile("sprite: missing data");
+    throw InvalidResource("sprite: missing data");
 }
 
 void Sprite::save(Buffer& buf) const
